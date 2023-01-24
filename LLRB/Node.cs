@@ -8,15 +8,14 @@ namespace LLRB
 {
     public class Node<T> where T : IComparable<T>
     {
-        public Node<T> Left { get; set; }
-        public Node<T> Right { get; set; }
+        public List<Node<T>> Children { get; set; }
 
-        public T Key { get; set; }
-        public bool Red { get; set; }
+        public List<T> Keys { get; set; }
+        public bool Red { get; set; } = true;
         
-        public Node(T key)
+        public Node(List<T> keys)
         {
-            Key = key;
+            Keys = keys;
         }
 
     }
