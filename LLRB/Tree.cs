@@ -10,7 +10,6 @@ namespace LLRB
     public class Tree<T> where T : IComparable<T>
     {
         private Node<T> root;
-        const int SplitDegree = 3;
 
         public Tree()
         {
@@ -21,7 +20,7 @@ namespace LLRB
         {
             if (root == null)
             {
-                root = new Node<T>(new List<T> { key });
+                root = new Node<T>(key);
                 return;
             }
 
@@ -36,56 +35,112 @@ namespace LLRB
                 return;
             }
 
-            if (curr.Children != null)
+            FixUp(curr);
+
+            SplitCheck(curr);
+
+            if (curr.Key.CompareTo(key) < 0)
             {
-                for (int i = 0; i < curr.Keys.Count; i++)
+
+                if (curr.Right == null)
+                {    
+                    curr.Right = new Node<T>(key);
+                    return;
+                }
+                else
                 {
-                    if (key.CompareTo(curr.Keys[i]) < 0)
-                    { 
-                        SplitCheck(curr, i);
-                      
-                        Insert(curr.Children[i], key);
+                    Insert(curr.Right, key);
+                }
+            }
+            else if (curr.Key.CompareTo(key) >= 0)
+            {
 
-                        return;
-                    }
-                    else if (curr.Keys.Count == i + 1 || key.CompareTo(curr.Keys[i + 1]) < 0)
-                    {
-                        SplitCheck(curr, i + 1);
-                     
-                        Insert(curr.Children[i + 1], key);
-
-                        return;
-                    }
+                if (curr.Left == null)
+                {
+                    curr.Left = new Node<T>(key);
+                    return;
+                }
+                else
+                {
+                    Insert(curr.Left, key);
                 }
             }
 
-            for (int i = 0; i < curr.Keys.Count; i++)
+            if (IsRed(curr.Right))
             {
-                if (key.CompareTo(curr.Keys[i]) < 0)
-                {
-                    curr.Keys.Insert(i, key);
-                    return;
-                }
-                else if (curr.Keys.Count == i + 1 || key.CompareTo(curr.Keys[i + 1]) < 0)
-                {
-                    curr.Keys.Insert(i + 1, key);
-                    return;
-                }
+                curr = RotateLeft(curr);
             }
 
-        }
-
-        private void Split(Node<T> curr, int i)
-        {
+            if (IsRed(curr.Left) && IsRed(curr.Left.Left))
+            {
+                curr = RotateRight(curr);
+            }
 
             return;
         }
-        public void SplitCheck(Node<T> curr, int i)
+
+        private void Split(Node<T> curr)
         {
-            if (curr.Left.Red == true && curr.Right.Red == true)
+            FlipColor(curr);
+        }
+        public void SplitCheck(Node<T> curr)
+        {
+            if (IsRed(curr.Left) && IsRed(curr.Right))
             {
-                Split(curr, i);
+                Split(curr);
             }
+        }
+
+        public void FixUp(Node<T> node)
+        {
+            if (IsRed(node.Right))
+            {
+                node = RotateLeft(node);
+            }
+            if (IsRed(node.Right))
+            {
+                node = RotateRight(node);
+            }
+
+            
+
+            if (node.Left.Right != null && node.Left.Left == null && node.Left.Right.Right != null && node.Left.Right.Left == null)
+            {
+                node.Left = RotateLeft(node.Left);
+                node.Left = RotateRight(node.Left);
+            }
+        }
+
+        public Node<T> MoveRedRight(Node<T> node)
+        {
+            FlipColor(node);
+
+            if (IsRed(node.Left.Left))
+            {
+                node = RotateRight(node);
+                FlipColor(node);
+            }
+
+            return node;
+        }
+
+        public Node<T> MoveRedLeft(Node<T> node)
+        {
+            FlipColor(node);
+
+            if (IsRed(node.Right.Left))
+            {
+                node.Right = RotateRight(node.Right);
+                node = RotateLeft(node);
+                FlipColor(node);
+
+                if (IsRed(node.Right.Right))
+                {
+                    node.Right = RotateLeft(node.Right);
+                }
+            }
+
+            return node;
         }
 
         public Node<T> RotateLeft(Node<T> node)
@@ -95,6 +150,9 @@ namespace LLRB
             node.Right = node.Right.Left;
 
             newHead.Left = node;
+
+            newHead.Red = node.Red;
+            node.Red = true;
 
             return newHead;
         }
@@ -107,11 +165,16 @@ namespace LLRB
 
             newHead.Right = node;
 
+            newHead.Red = node.Red;
+            node.Red = true;
+
             return newHead;
         }
 
         public void FlipColor(Node<T> node)
         {
+            //Flips node and children colors
+
             if (node.Red)
             {
                 node.Red = false;
@@ -143,11 +206,13 @@ namespace LLRB
 
         public bool IsRed(Node<T> node)
         {
-            if (node == null)
+            if (node == null || node.Red == false)
             {
                 return false;
             }
+       
             return true;
+            
         }
 
 
