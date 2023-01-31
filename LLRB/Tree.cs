@@ -11,10 +11,13 @@ namespace LLRB
     {
         private Node<T> root;
 
+#pragma warning disable
+
         public Tree()
         {
             root = null;
         }
+#pragma warning enable
 
         public void Insert(T key)
         {
@@ -102,7 +105,7 @@ namespace LLRB
                 node = RotateRight(node);
             }
 
-            
+            //Try to figure out FixUp
 
             if (node.Left.Right != null && node.Left.Left == null && node.Left.Right.Right != null && node.Left.Right.Left == null)
             {
