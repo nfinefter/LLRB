@@ -12,6 +12,8 @@
             {
                 tree.Insert(rand.Next(0, 25));
             }
+            //Check Insert
+            //Make Remove
         }
     }
 }
