@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -21,52 +22,29 @@ namespace LLRB
 
         public void Insert(T key)
         {
-            if (root == null)
-            {
-                root = new Node<T>(key);
-                return;
-            }
 
             Node<T> curr = root;
 
-            Insert(curr, key);
+            root = Insert(curr, key);
+
+            root.Red = false;
         }
-        private void Insert(Node<T> curr, T key)
+        private Node<T> Insert(Node<T> curr, T key)
         {
             if (curr == null)
             {
-                return;
+                return new Node<T>(key);
             }
-
-            FixUp(curr);
 
             SplitCheck(curr);
 
-            if (curr.Key.CompareTo(key) < 0)
+            if (curr.Key.CompareTo(key) <= 0)
             {
-
-                if (curr.Right == null)
-                {    
-                    curr.Right = new Node<T>(key);
-                    return;
-                }
-                else
-                {
-                    Insert(curr.Right, key);
-                }
+                curr.Right = Insert(curr.Right, key);
             }
-            else if (curr.Key.CompareTo(key) >= 0)
+            else if (curr.Key.CompareTo(key) > 0)
             {
-
-                if (curr.Left == null)
-                {
-                    curr.Left = new Node<T>(key);
-                    return;
-                }
-                else
-                {
-                    Insert(curr.Left, key);
-                }
+                curr.Left = Insert(curr.Left, key);
             }
 
             if (IsRed(curr.Right))
@@ -79,7 +57,7 @@ namespace LLRB
                 curr = RotateRight(curr);
             }
 
-            return;
+            return curr;
         }
 
         private void Split(Node<T> curr)
@@ -100,17 +78,28 @@ namespace LLRB
             {
                 node = RotateLeft(node);
             }
-            if (IsRed(node.Right))
+            if (IsRed(node.Left) && IsRed(node.Left.Left))
             {
                 node = RotateRight(node);
             }
 
-            //Try to figure out FixUp
+            //if (IsRed())
+            //{
+            //    node = RotateRight(node);
+            //}
 
-            if (node.Left.Right != null && node.Left.Left == null && node.Left.Right.Right != null && node.Left.Right.Left == null)
+            if (IsRed(node.Left) && IsRed(node.Right))
             {
-                node.Left = RotateLeft(node.Left);
-                node.Left = RotateRight(node.Left);
+                FlipColor(node);
+            }
+
+            if (node.Left != null)
+            {
+                if (node.Left.Right != null && node.Left.Left == null && node.Left.Right.Right != null && node.Left.Right.Left == null)
+                {
+                    node.Left = RotateLeft(node.Left);
+                    node.Left = RotateRight(node.Left);
+                }
             }
         }
 
@@ -164,7 +153,7 @@ namespace LLRB
         {
             Node<T> newHead = node.Left;
 
-            node.Right = node.Left.Right;
+            node.Left = node.Left.Right;
 
             newHead.Right = node;
 
@@ -213,9 +202,9 @@ namespace LLRB
             {
                 return false;
             }
-       
+
             return true;
-            
+
         }
 
 
