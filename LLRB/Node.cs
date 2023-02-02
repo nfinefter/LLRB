@@ -35,12 +35,14 @@ namespace LLRB
         }
 
 
-        public List<T> Keys { get; set; }
+        public T Key { get; set; }
         public bool Red { get; set; } = true;
-        
-        public Node(List<T> keys)
+
+
+#pragma warning disable
+        public Node(T key)
         {
-            Keys = keys;
+            Key = key;
         }
 
     }
