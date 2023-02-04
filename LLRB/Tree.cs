@@ -59,6 +59,19 @@ namespace LLRB
 
             return curr;
         }
+        
+        public void Remove(T key)
+        {
+            if (root.Key.CompareTo(key) == 0)
+            {
+                root = null;
+            }
+        }
+
+        private Node<T> Remove(Node<T> curr, T key)
+        {
+
+        }
 
         private void Split(Node<T> curr)
         {
