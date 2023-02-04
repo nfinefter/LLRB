@@ -10,7 +10,7 @@ namespace LLRB
 {
     public class Tree<T> where T : IComparable<T>
     {
-        private Node<T> root;
+        public Node<T> root;
 
 #pragma warning disable
 
@@ -22,13 +22,13 @@ namespace LLRB
 
         public void Insert(T key)
         {
-
             Node<T> curr = root;
 
             root = Insert(curr, key);
 
             root.Red = false;
         }
+
         private Node<T> Insert(Node<T> curr, T key)
         {
             if (curr == null)
@@ -59,17 +59,71 @@ namespace LLRB
 
             return curr;
         }
-        
+
         public void Remove(T key)
         {
-            if (root.Key.CompareTo(key) == 0)
-            {
-                root = null;
-            }
+            Node<T> curr = root;
+
+            root = Remove(curr, key);
         }
 
         private Node<T> Remove(Node<T> curr, T key)
         {
+            if (curr == null)
+            {
+                return null;
+            }
+        }
+
+        public bool DoesWork()
+        {
+            if (root == null)
+            {
+                return false;
+            }
+            if (root.Red)
+            {
+                return false;
+            }
+
+            int firstBlackCount = -1;
+
+            bool work = DoesWork(root, 0, ref firstBlackCount);
+
+            return work;
+        }
+
+        private bool DoesWork(Node<T> curr, int blackCount, ref int firstBlackCount)
+        {
+            if (IsRed(curr) && (IsRed(curr.Left) || IsRed(curr.Right)))
+            {
+                return false;
+            }
+
+            if (curr == null)
+            {
+                if (firstBlackCount != -1)
+                {
+                    return blackCount == firstBlackCount;
+                }
+
+                firstBlackCount = blackCount;
+                
+                return true;
+            }
+
+            if (IsRed(curr.Right) && !IsRed(curr.Left))
+            {
+                return false;
+            }
+
+            if (!curr.Red)
+            {
+                blackCount++;
+            }
+
+            return DoesWork(curr.Left, blackCount, ref firstBlackCount) & DoesWork(curr.Right, blackCount, ref firstBlackCount);
+            
 
         }
 
@@ -77,6 +131,7 @@ namespace LLRB
         {
             FlipColor(curr);
         }
+       
         public void SplitCheck(Node<T> curr)
         {
             if (IsRed(curr.Left) && IsRed(curr.Right))
@@ -219,7 +274,11 @@ namespace LLRB
             return true;
 
         }
-
+       
+        public void Clear()
+        {
+            root = null;
+        }
 
     }
 }
