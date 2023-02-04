@@ -73,6 +73,8 @@ namespace LLRB
             {
                 return null;
             }
+
+            return new Node<T>(key);
         }
 
         public bool DoesWork()
