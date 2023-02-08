@@ -82,7 +82,7 @@ namespace LLRB
 
             if (curr.Key.CompareTo(key) > 0)
             {
-                if (TwoNode(curr))
+                if (TwoNode(curr.Left))
                 {
                     curr = MoveRedLeft(curr);
                 }
@@ -108,7 +108,7 @@ namespace LLRB
                 //Either the value still exists on the right
                 else if (curr.Key.CompareTo(key) < 0)
                 {
-                    if (TwoNode(curr))
+                    if (TwoNode(curr.Right))
                     {
                         curr = MoveRedRight(curr);
                     }
@@ -131,7 +131,7 @@ namespace LLRB
                 else if (ThreeNode(curr) || FourNode(curr))
                 {
                     //We still want to MoveRedRight if required
-                    if (TwoNode(curr))
+                    if (TwoNode(curr.Right))
                     {
                         curr = MoveRedRight(curr);
                     }
