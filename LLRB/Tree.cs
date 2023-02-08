@@ -11,6 +11,7 @@ namespace LLRB
     public class Tree<T> where T : IComparable<T>
     {
         public Node<T> root;
+        public int Count { get; private set;}
 
 #pragma warning disable
 
@@ -62,6 +63,11 @@ namespace LLRB
 
         public void Remove(T key)
         {
+            if (root == null)
+            {
+                throw new ArgumentException("Root was null");
+            }
+
             Node<T> curr = root;
 
             root = Remove(curr, key);
@@ -74,7 +80,71 @@ namespace LLRB
                 return null;
             }
 
-            return new Node<T>(key);
+            if (curr.Key.CompareTo(key) > 0)
+            {
+                if (TwoNode(curr))
+                {
+                    curr = MoveRedLeft(curr);
+                }
+
+                curr.Left = Remove(curr.Left, key);
+            }
+            else
+            {
+                //You only need to check if the left child is red then rotate right.
+                if (IsRed(curr.Left))
+                {
+                    curr = RotateRight(curr);
+                }
+                //If the current node still has the value we want to delete
+                if (curr.Key.CompareTo(key) == 0)
+                {
+                    //and the current node is a leaf node, we can remove it by cutting it's connection to the tree
+                    if (curr.Left == null && curr.Right == null)
+                    {
+                        curr = null;
+                    }    
+                }
+                //Either the value still exists on the right
+                else if (curr.Key.CompareTo(key) < 0)
+                {
+                    if (TwoNode(curr))
+                    {
+                        curr = MoveRedRight(curr);
+                    }
+
+                    if (key.CompareTo(curr.Key) == 0)
+                    {
+                        while (curr.Left != null)
+                        {
+                            curr = curr.Left;
+                        }
+
+                        curr.Right = Remove(curr.Right, curr.Key);
+                    }
+                    else
+                    {
+                        curr.Right = Remove(curr.Right, key);
+                    }
+                }
+                //We found the value as part of an internal 3-node or 4-node.
+                else if (ThreeNode(curr) || FourNode(curr))
+                {
+                    //We still want to MoveRedRight if required
+                    if (TwoNode(curr))
+                    {
+                        curr = MoveRedRight(curr);
+                    }
+                    
+                    if (curr.Left != null)
+                    {
+                        curr = curr.Left;
+                    }
+                    curr = Remove(curr, curr.Key);
+                }
+            }
+
+            return FixUp(curr);
         }
 
         public bool DoesWork()
@@ -142,7 +212,7 @@ namespace LLRB
             }
         }
 
-        public void FixUp(Node<T> node)
+        public Node<T> FixUp(Node<T> node)
         {
             if (IsRed(node.Right))
             {
@@ -171,6 +241,8 @@ namespace LLRB
                     node.Left = RotateRight(node.Left);
                 }
             }
+
+            return node;
         }
 
         public Node<T> MoveRedRight(Node<T> node)
@@ -282,5 +354,19 @@ namespace LLRB
             root = null;
         }
 
+        public bool TwoNode(Node<T> curr)
+        {
+            return !IsRed(curr.Left) && !IsRed(curr.Left.Left);
+        }
+
+        public bool ThreeNode(Node<T> curr)
+        {
+            return IsRed(curr.Left) && !IsRed(curr.Right);
+        }
+
+        public bool FourNode(Node<T> curr)
+        {
+            return IsRed(curr.Left) && IsRed(curr.Right);
+        }
     }
 }

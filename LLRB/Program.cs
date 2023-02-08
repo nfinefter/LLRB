@@ -8,9 +8,12 @@
 
             Random rand = new Random(0);
 
+            int num = 0;
+
             for (int i = 0; i < 500; i++)
             {
-                tree.Insert(rand.Next(0, 25));
+                num = rand.Next(0, 25);
+                tree.Insert(num);
             }
             //Check Insert
             //Make Remove
@@ -18,14 +21,10 @@
 
             Console.WriteLine(work);
 
-            tree.Clear();
-
             //Trying to manuall break tree below
             //Successful in breaking
 
-            tree.root = new Node<int>(5) { Red = false };
-            tree.root.Right = new Node<int>(7) { Red = false };
-            tree.root.Left = new Node<int>(5) { Red = false};
+            tree.Remove(num);
 
             Console.WriteLine(tree.DoesWork());
         }
