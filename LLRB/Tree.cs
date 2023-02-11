@@ -80,6 +80,8 @@ namespace LLRB
                 return null;
             }
 
+            //Will Crash if deleting value doesnt exist
+
             if (curr.Key.CompareTo(key) > 0)
             {
                 if (TwoNode(curr.Left))
@@ -100,10 +102,13 @@ namespace LLRB
                 if (curr.Key.CompareTo(key) == 0)
                 {
                     //and the current node is a leaf node, we can remove it by cutting it's connection to the tree
-                    if (curr.Left == null && curr.Right == null)
+                    if (curr.Left == null)
                     {
-                        curr = null;
-                    }    
+                        return null;
+                    }
+
+                    FindDeleteLeftMax(curr.Left);
+
                 }
                 //Either the value still exists on the right
                 else if (curr.Key.CompareTo(key) < 0)
@@ -145,6 +150,25 @@ namespace LLRB
             }
 
             return FixUp(curr);
+        }
+
+        public Node<T> FindDeleteLeftMax(Node<T> curr)
+        {
+            if (curr == null)
+            {
+
+            }
+
+
+            if (TwoNode(curr))
+            {
+                curr = MoveRedLeft(curr);
+            }
+
+            FindDeleteLeftMax(curr.Right);
+            
+
+
         }
 
         public bool DoesWork()
@@ -356,7 +380,7 @@ namespace LLRB
 
         public bool TwoNode(Node<T> curr)
         {
-            return !IsRed(curr.Left) && !IsRed(curr.Left.Left);
+            return !IsRed(curr.Left) && !IsRed(curr);
         }
 
         public bool ThreeNode(Node<T> curr)

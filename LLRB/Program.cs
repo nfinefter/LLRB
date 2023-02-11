@@ -10,9 +10,15 @@
 
             int num = 0;
 
-            for (int i = 0; i < 500; i++)
-            {
+            List<int> randoms = new List<int>();
+
+            for (int i = 0; i < 24; i++)
+            {   
                 num = rand.Next(0, 25);
+                if (rand.Next(0, 5) == 3)
+                {
+                    randoms.Add(num);
+                }
                 tree.Insert(num);
             }
             //Check Insert
@@ -24,9 +30,13 @@
             //Trying to manuall break tree below
             //Successful in breaking
 
-            tree.Remove(num);
+            for (int i = 0; i < randoms.Count; i++)
+            {
+                tree.Remove(randoms[i]);
+                Console.WriteLine(tree.DoesWork());
+            }
 
-            Console.WriteLine(tree.DoesWork());
+            
         }
         
     }
