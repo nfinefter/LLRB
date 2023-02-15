@@ -107,7 +107,9 @@ namespace LLRB
                         return null;
                     }
 
-                    FindDeleteLeftMax(curr.Left);
+                    curr.Left = FindDeleteLeftMax(curr.Left, out T newKey);
+
+                    curr.Key = newKey;
 
                 }
                 //Either the value still exists on the right
@@ -152,23 +154,29 @@ namespace LLRB
             return FixUp(curr);
         }
 
-        public Node<T> FindDeleteLeftMax(Node<T> curr)
+        public Node<T> FindDeleteLeftMax(Node<T> curr, out T key)
         {
-            if (curr == null)
+            if (curr.Right == null)
             {
+                key = curr.Key;
 
+                if (curr.Left != null)
+                {
+                    return curr.Left;
+                }
+
+                curr = null;
+                return curr;
             }
-
 
             if (TwoNode(curr))
             {
                 curr = MoveRedLeft(curr);
             }
 
-            FindDeleteLeftMax(curr.Right);
-            
+            curr.Right = FindDeleteLeftMax(curr.Right, out key);
 
-
+            return FixUp(curr);
         }
 
         public bool DoesWork()
@@ -218,8 +226,8 @@ namespace LLRB
                 blackCount++;
             }
 
-            return DoesWork(curr.Left, blackCount, ref firstBlackCount) & DoesWork(curr.Right, blackCount, ref firstBlackCount);
-            
+            bool good =  DoesWork(curr.Left, blackCount, ref firstBlackCount) & DoesWork(curr.Right, blackCount, ref firstBlackCount);
+            return good;
 
         }
 

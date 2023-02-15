@@ -12,10 +12,10 @@
 
             List<int> randoms = new List<int>();
 
-            for (int i = 0; i < 24; i++)
+            for (int i = 0; i < 10; i++)
             {   
                 num = rand.Next(0, 25);
-                if (rand.Next(0, 5) == 3)
+                if (rand.Next(0, 4) == 3)
                 {
                     randoms.Add(num);
                 }
