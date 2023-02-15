@@ -193,7 +193,7 @@ namespace LLRB
             int firstBlackCount = -1;
 
             bool work = DoesWork(root, 0, ref firstBlackCount);
-
+            //Check where tree breaks
             return work;
         }
 
