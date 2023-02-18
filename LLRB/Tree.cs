@@ -120,6 +120,13 @@ namespace LLRB
                         curr = MoveRedRight(curr);
                     }
 
+                    //In the case of an internal 3-node or 4-node, we still want to MoveRedRight if required then perform a BST delete for an internal node
+                    if (ThreeNode(curr) && FourNode(curr))
+                    {
+                        //WORK ON THIS PART
+                        curr = MoveRedRight(curr);
+                    }
+
                     if (key.CompareTo(curr.Key) == 0)
                     {
                         while (curr.Left != null)
