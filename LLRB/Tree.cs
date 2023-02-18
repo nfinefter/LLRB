@@ -255,22 +255,18 @@ namespace LLRB
                 node = RotateRight(node);
             }
 
-            //if (IsRed())
-            //{
-            //    node = RotateRight(node);
-            //}
-
-            if (IsRed(node.Left) && IsRed(node.Right))
+            if (FourNode(node))
             {
                 FlipColor(node);
             }
 
-            if (node.Left != null)
+            if ((node.Left != null) && IsRed(node.Left.Right) && !IsRed(node.Left.Left))
             {
-                if (node.Left.Right != null && node.Left.Left == null && node.Left.Right.Right != null && node.Left.Right.Left == null)
+                node.Left = RotateLeft(node.Left);
+
+                if (IsRed(node.Left))
                 {
-                    node.Left = RotateLeft(node.Left);
-                    node.Left = RotateRight(node.Left);
+                    node = RotateRight(node);
                 }
             }
 
