@@ -19,7 +19,7 @@
                 {
                     randoms.Add(num);
                 }
-                tree.Insert(num);
+                tree.Add(num);
             }
             //Check Insert
             //Make Remove
@@ -33,10 +33,21 @@
             for (int i = 0; i < randoms.Count; i++)
             {
                 tree.Remove(randoms[i]);
-                Console.WriteLine(tree.DoesWork());
+                work = tree.DoesWork();
             }
+            Console.WriteLine(work);
 
-            
+            int max = tree.Max();
+            int min = tree.Min();
+
+            Console.WriteLine($"Max: {max}");
+            Console.WriteLine($"Min: {min}");
+
+            int Ceiling = tree.Ceiling(15);
+            int Floor = tree.Floor(15);
+
+            Console.WriteLine($"Max: {Ceiling}");
+            Console.WriteLine($"Min: {Floor}");
         }
         
     }

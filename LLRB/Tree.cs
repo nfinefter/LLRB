@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -8,10 +9,12 @@ using System.Xml.Linq;
 
 namespace LLRB
 {
-    public class Tree<T> where T : IComparable<T>
+    public class Tree<T> : ISortedSet<T> where T : IComparable<T> 
     {
         public Node<T> root;
         public int Count { get; private set;}
+
+        public IComparer<T> Comparer => throw new NotImplementedException();
 
 #pragma warning disable
 
@@ -21,16 +24,20 @@ namespace LLRB
         }
 #pragma warning enable
 
-        public void Insert(T key)
+        public bool Add(T key)
         {
             Node<T> curr = root;
 
-            root = Insert(curr, key);
+            int beforeCount = Count;
+
+            root = Add(curr, key);
 
             root.Red = false;
+
+            return Count != beforeCount;
         }
 
-        private Node<T> Insert(Node<T> curr, T key)
+        private Node<T> Add(Node<T> curr, T key)
         {
             if (curr == null)
             {
@@ -41,11 +48,11 @@ namespace LLRB
 
             if (curr.Key.CompareTo(key) <= 0)
             {
-                curr.Right = Insert(curr.Right, key);
+                curr.Right = Add(curr.Right, key);
             }
             else if (curr.Key.CompareTo(key) > 0)
             {
-                curr.Left = Insert(curr.Left, key);
+                curr.Left = Add(curr.Left, key);
             }
 
             if (IsRed(curr.Right))
@@ -61,7 +68,7 @@ namespace LLRB
             return curr;
         }
 
-        public void Remove(T key)
+        public bool Remove(T key)
         {
             if (root == null)
             {
@@ -70,7 +77,12 @@ namespace LLRB
 
             Node<T> curr = root;
 
+            int beforeCount = Count;
+
             root = Remove(curr, key);
+
+            return Count != beforeCount;
+
         }
 
         private Node<T> Remove(Node<T> curr, T key)
@@ -107,12 +119,9 @@ namespace LLRB
                         return null;
                     }
 
-                    curr.Left = FindDeleteLeftMax(curr.Left, out T newKey);
-
-                    curr.Key = newKey;
-
                 }
                 //Either the value still exists on the right
+
                 else if (curr.Key.CompareTo(key) < 0)
                 {
                     if (TwoNode(curr.Right))
@@ -121,10 +130,16 @@ namespace LLRB
                     }
 
                     //In the case of an internal 3-node or 4-node, we still want to MoveRedRight if required then perform a BST delete for an internal node
-                    if (ThreeNode(curr) && FourNode(curr))
+                    if (ThreeNode(curr.Right) && FourNode(curr.Right))
                     {
                         //WORK ON THIS PART
                         curr = MoveRedRight(curr);
+
+                        curr = FindDeleteLeftMax(curr.Left, out T newKey);
+
+                        curr.Key = newKey;
+
+                        curr = Remove(curr.Right, curr.Key);
                     }
 
                     if (key.CompareTo(curr.Key) == 0)
@@ -402,6 +417,180 @@ namespace LLRB
         public bool FourNode(Node<T> curr)
         {
             return IsRed(curr.Left) && IsRed(curr.Right);
+        }
+
+
+        public void AddRange(IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                Add(item);
+            }
+        }
+
+        public bool Contains(T item)
+        {
+            var curr = root;
+
+            Contains(curr, item, out bool contained);
+
+            return contained;
+        }
+
+        public Node<T> Contains(Node<T> curr, T item, out bool contained)
+        {
+            contained = false;
+
+            if (curr == null)
+            {
+                return null;
+            }
+
+            if (curr.Key.CompareTo(item) > 0)
+            {
+                return Contains(curr.Left, item, out contained);
+            }
+            else
+            {
+                if (curr.Key.CompareTo(item) == 0)
+                {
+                    contained = true;
+                    return null;
+                }
+
+                else if (curr.Key.CompareTo(item) < 0)
+                {
+                    return Contains(curr.Left, item, out contained);
+                }
+            }
+
+            return null;
+        }
+
+        public T Max()
+        {
+            Node<T> curr = root;
+
+            while (curr.Right != null)
+            {
+                curr = curr.Right;
+            }
+
+            return curr.Key;
+        }
+
+        public T Min()
+        {
+            Node<T> curr = root;
+
+            while (curr.Left != null)
+            {
+                curr = curr.Left;
+            }
+
+            return curr.Key;
+        }
+
+        public T Ceiling(T item)//Finds value or value directly above it
+        {
+            Node<T> curr = root;
+
+            curr = Ceiling(curr, item);
+
+            return curr.Key;
+
+        }
+
+        public Node<T> Ceiling(Node<T> curr, T item)
+        {
+            if (curr.Key.CompareTo(item) > 0)//curr > item
+            {
+                if (curr.Left.Key.CompareTo(item) < 0)// Left < item
+                {
+                    //NOT WORKING
+                    return curr;
+                }
+
+                return Ceiling(curr.Left, item);
+            }
+            else
+            {
+                if (curr.Key.CompareTo(item) == 0)
+                {
+                    return curr;
+                }
+
+                else if (curr.Key.CompareTo(item) < 0)
+                {
+                    return Ceiling(curr.Right, item);
+                }
+            }
+            return null;
+
+        }
+
+        public T Floor(T item)//Finds value or value directly below it, seems to be working
+        {
+            Node<T> curr = root;
+
+            curr = Floor(curr, item);
+
+            return curr.Key;
+
+        }
+
+        public Node<T> Floor(Node<T> curr, T item)
+        {
+            if (curr.Key.CompareTo(item) > 0)
+            {
+                return Floor(curr.Left, item);
+            }
+            else
+            {
+                if (curr.Key.CompareTo(item) == 0)
+                {
+                    return curr;
+                }
+
+                else//string check = "if our item is larger than our current value";
+                {
+                    if (curr.Right.Key.CompareTo(item) > 0)
+                    {
+                        return curr;
+                    }
+
+                    return Floor(curr.Right, item);
+                }
+            }
+        }
+
+        public ISortedSet<T> Union(ISortedSet<T> other)
+        {
+            AddRange(other);
+
+            return this;
+        }
+
+        public ISortedSet<T> Intersection(ISortedSet<T> other)
+        {
+            ISortedSet<T> set = new Tree<T>();
+
+            foreach (var item in this)
+            {
+
+            }
+            
+            return set;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 }
