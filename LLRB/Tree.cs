@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -552,7 +553,7 @@ namespace LLRB
                     return curr;
                 }
 
-                else//string check = "if our item is larger than our current value";
+                else//string check = "if our item is larger than our current value"; (joke)
                 {
                     if (curr.Right.Key.CompareTo(item) > 0)
                     {
@@ -577,20 +578,51 @@ namespace LLRB
 
             foreach (var item in this)
             {
-
+                //Tell me about Intersection
             }
             
             return set;
         }
 
+        public struct Enumerator : IEnumerator<T>
+        {
+            object IEnumerator.Current => Current;
+
+            public T Current => throw new NotImplementedException();
+
+            int state;
+
+            Tree<T> Tree;
+
+            public Enumerator(Tree<T> tree)
+            {
+                state = 0;
+                Tree = tree;
+            }
+
+            public void Dispose()
+            {
+                Tree = null;
+            }
+
+            public bool MoveNext()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Reset()
+            {
+                state = 0;
+            }
+        }
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return new Enumerator(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
     }
 }
