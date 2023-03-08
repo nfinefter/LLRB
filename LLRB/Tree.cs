@@ -537,14 +537,17 @@ namespace LLRB
             curr = Floor(curr, item);
 
             return curr.Key;
-
         }
-
-        public Node<T> Floor(Node<T> curr, T item)
+        
+        public Node<T> Floor(Node<T> curr, T item)//WORK ON FLOOR AND CEILING BROKEN
         {
             if (curr.Key.CompareTo(item) > 0)
             {
-                return Floor(curr.Left, item);
+                if (curr.Left != null)
+                {
+                    return Floor(curr.Left, item);
+                }
+                throw new Exception("no floor");
             }
             else
             {
@@ -555,14 +558,22 @@ namespace LLRB
 
                 else//string check = "if our item is larger than our current value"; (joke)
                 {
-                    if (curr.Right.Key.CompareTo(item) > 0)
+                    if (curr.Right != null)
                     {
-                        return curr;
+                        return Floor(curr.Right, item);
                     }
 
-                    return Floor(curr.Right, item);
-                }
+                    if (curr.Right.Key.CompareTo(item) > 0)
+                    {
+                        if (curr.Left != null)
+                        {
+                            return Floor(curr.Left, item);
+                        }
+                    }
+                    return curr;
+                } 
             }
+
         }
 
         public ISortedSet<T> Union(ISortedSet<T> other)
@@ -587,18 +598,25 @@ namespace LLRB
         //https://sharplab.io/#v2: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
         public struct Enumerator : IEnumerator<T>
         {
+            Tree<T> myTree;
+
             object IEnumerator.Current => Current;
 
-            public T Current => throw new NotImplementedException();
+            T currValue;
+            public T Current => currValue;
+
+            Node<T> curr;
 
             int state;
 
-            Tree<T> myTree;
+            Stack<Node<T>> nodes = new Stack<Node<T>>();
 
             public Enumerator(Tree<T> tree)
             {
                 state = 0;
                 myTree = tree;
+                curr = myTree.root;
+                currValue = default;
             }
 
             public void Dispose()
@@ -608,7 +626,21 @@ namespace LLRB
 
             public bool MoveNext()
             {
-
+                if (curr != null || nodes.Count != 0)
+                {
+                    while (curr != null)
+                    {
+                        nodes.Push(curr);
+                        curr = curr.Left;
+                    }    
+                    if (curr == null)
+                    {
+                        curr = nodes.Pop();
+                        currValue = curr.Key;
+                        curr = curr.Right;
+                    }
+                    return true;
+                }
 
                 return false;
             }

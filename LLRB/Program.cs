@@ -44,10 +44,15 @@
             Console.WriteLine($"Min: {min}");
 
             int Ceiling = tree.Ceiling(15);
-            int Floor = tree.Floor(15);
+            int Floor = tree.Floor(23);
 
-            Console.WriteLine($"Max: {Ceiling}");
-            Console.WriteLine($"Min: {Floor}");
+            Console.WriteLine($"Ceiling: {Ceiling}");
+            Console.WriteLine($"Floor: {Floor}");
+
+            foreach (var item in tree)
+            {
+                Console.WriteLine(item);
+            }
         }
         
     }
