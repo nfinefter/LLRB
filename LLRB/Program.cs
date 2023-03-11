@@ -43,13 +43,54 @@
             Console.WriteLine($"Max: {max}");
             Console.WriteLine($"Min: {min}");
 
-            int Ceiling = tree.Ceiling(15);
-            int Floor = tree.Floor(23);
+            int Ceiling = tree.Ceiling(5);
+            int Floor = tree.Floor(300);
 
             Console.WriteLine($"Ceiling: {Ceiling}");
             Console.WriteLine($"Floor: {Floor}");
 
             foreach (var item in tree)
+            {
+                Console.WriteLine(item);
+            }
+           
+            Tree<int> newTree = new Tree<int>();
+
+            rand = new Random(1);
+
+            randoms = new List<int>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                num = rand.Next(0, 25);
+                if (rand.Next(0, 4) == 3)
+                {
+                    randoms.Add(num);
+                }
+                newTree.Add(num);
+            }
+
+            Console.WriteLine("end");
+
+            foreach (var item in newTree)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("end");
+
+            Tree<int> finalTree = (Tree<int>)tree.Union(newTree);
+
+            foreach (var item in finalTree)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("end");
+
+            Tree<int> final = (Tree<int>)tree.Intersection(finalTree);
+
+            foreach (var item in final)
             {
                 Console.WriteLine(item);
             }

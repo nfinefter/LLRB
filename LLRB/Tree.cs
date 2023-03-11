@@ -506,27 +506,23 @@ namespace LLRB
         {
             if (curr.Key.CompareTo(item) > 0)//curr > item
             {
-                if (curr.Left.Key.CompareTo(item) < 0)// Left < item
+                if (curr.Left != null)
                 {
-                    //NOT WORKING
-                    return curr;
+                    if (curr.Left.Key.CompareTo(item) < 0)// Left < item
+                    {
+                        return curr;
+                    }
+                    return Ceiling(curr.Left, item);
                 }
-
-                return Ceiling(curr.Left, item);
             }
             else
             {
-                if (curr.Key.CompareTo(item) == 0)
-                {
-                    return curr;
-                }
-
-                else if (curr.Key.CompareTo(item) < 0)
+                if (curr.Key.CompareTo(item) < 0)
                 {
                     return Ceiling(curr.Right, item);
                 }
             }
-            return null;
+            return curr;
 
         }
 
@@ -539,7 +535,7 @@ namespace LLRB
             return curr.Key;
         }
         
-        public Node<T> Floor(Node<T> curr, T item)//WORK ON FLOOR AND CEILING BROKEN
+        public Node<T> Floor(Node<T> curr, T item)
         {
             if (curr.Key.CompareTo(item) > 0)
             {
@@ -547,7 +543,10 @@ namespace LLRB
                 {
                     return Floor(curr.Left, item);
                 }
-                throw new Exception("no floor");
+                else
+                {
+                    return curr;
+                }
             }
             else
             {
@@ -556,21 +555,21 @@ namespace LLRB
                     return curr;
                 }
 
-                else//string check = "if our item is larger than our current value"; (joke)
+                else
                 {
                     if (curr.Right != null)
                     {
-                        return Floor(curr.Right, item);
-                    }
-
-                    if (curr.Right.Key.CompareTo(item) > 0)
-                    {
-                        if (curr.Left != null)
+                        if (curr.Right.Key.CompareTo(item) < 0)
                         {
-                            return Floor(curr.Left, item);
+                            if (curr.Right != null)
+                            {
+                                return Floor(curr.Right, item);
+                            }
                         }
+                        
                     }
                     return curr;
+
                 } 
             }
 
@@ -578,9 +577,13 @@ namespace LLRB
 
         public ISortedSet<T> Union(ISortedSet<T> other)
         {
-            AddRange(other);
+            ISortedSet<T> set = new Tree<T>();
 
-            return this;
+            set.AddRange(this);
+
+            set.AddRange(other);
+
+            return set;
         }
 
         public ISortedSet<T> Intersection(ISortedSet<T> other)
@@ -589,7 +592,15 @@ namespace LLRB
 
             foreach (var item in this)
             {
-                //Tell me about Intersection
+                foreach (var otherItem in other)
+                {
+                    if (item.CompareTo(otherItem) == 0)
+                    {
+                        set.Add(item);
+                        break;
+                    }
+                    
+                }
             }
             
             return set;
